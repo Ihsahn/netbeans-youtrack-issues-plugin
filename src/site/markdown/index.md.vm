@@ -1,0 +1,26 @@
+#set($h1 = '#')
+#set($h2 = '##')
+#set($h3 = '###')
+#set($h4 = '####')
+#set($h5 = '#####')
+#set($h6 = '######')
+
+$h3 About
+`${project.name}` is a NetBeans plugin to manage [YouTrack](https://www.jetbrains.com/youtrack/) issues from within the IDE.
+
+Visit [Usage](./usage.html) for additional details.
+
+For bugs or enhancements, please use our [issue tracker](${project.issueManagement.url}).
+
+**Note:** this plugin is currently in the very early stages of development as we approach our [first milestone](https://github.com/llorllale/netbeans-youtrack-issues-plugin/milestone/1).
+
+<br/>
+
+$h4 Goals
+To integrate NetBeans with YouTrack so that a *developer* (read: not a project admin) can manage issues from within the IDE. 
+
+The are currently no known plugins for NetBeans <-> YouTrack. See:
+
+* https://teamcity-support.jetbrains.com/hc/en-us/community/posts/206883805-Plugin-for-NetBeans-
+* https://youtrack.jetbrains.com/issue/TW-5062
+* https://forums.netbeans.org/viewtopic.php?p=88079#88079
