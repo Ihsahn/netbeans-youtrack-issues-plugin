@@ -26,7 +26,7 @@ limitations under the License.
 
   <custom>
     <reflowSkin>
-      <!--<protocolRelativeURLs>true</protocolRelativeURLs>-->
+      <protocolRelativeURLs>true</protocolRelativeURLs>
       <theme>bootswatch-flatly</theme>
       <highlightJs>true</highlightJs>
       <highlightJsTheme>sunburst</highlightJsTheme>
