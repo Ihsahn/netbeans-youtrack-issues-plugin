@@ -14,3 +14,6 @@ Please direct any questions, feature requests or bugs to the [issue tracker](htt
 
 ## How do I contribute?
 Please view our guidelines for contributing [here](./CONTRIBUTING.md).
+
+## Change Log
+View our [change log](./CHANGELOG.md).
