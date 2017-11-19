@@ -17,14 +17,15 @@ jobs:
     script:
     - mvn -P site clean compile site
     deploy:
-      skip_cleanup: true
       - provider: pages
+        skip_cleanup: true
         local_dir: target/site/
         github_token: "$site_token"
         on:
           tags: true
           branch: master
       - provider: releases
+        skip_cleanup: true
         api_key: "$site_token"
         file: RELEASE.md
         on:
