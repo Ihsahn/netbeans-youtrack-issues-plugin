@@ -14,38 +14,34 @@
  * limitations under the License.
  */
 
-package org.llorllale.netbeans.youtrack.issues.dialogs;
+package org.llorllale.netbeans.youtrack.issues.mock.youtrack;
 
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import org.llorllale.netbeans.youtrack.issues.YouTrackFunction;
+import org.llorllale.youtrack.api.YouTrack;
+import org.llorllale.youtrack.api.session.AuthenticationException;
 
 /**
- * A dialog window with a "success" message.
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @since 0.2.0
  */
-public class Success implements Dialog {
-  private final String msg;
+public class IoError implements YouTrackFunction {
+  private final IOException error;
 
   /**
-   * Ctor.
    * 
-   * @param msg the message to display
+   * @param error 
    * @since 0.2.0
    */
-  public Success(String msg) {
-    this.msg = msg;
+  public IoError(IOException error) {
+    this.error = error;
   }
 
   @Override
-  public void show() {
-    DialogDisplayer.getDefault() 
-        .notify(
-            new NotifyDescriptor.Message(
-                this.msg, 
-                NotifyDescriptor.INFORMATION_MESSAGE
-            )
-        );
+  public YouTrack apply(String url, String token) 
+      throws MalformedURLException, AuthenticationException, IOException {
+    throw this.error;
   }
 }

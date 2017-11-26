@@ -14,19 +14,32 @@
  * limitations under the License.
  */
 
-package org.llorllale.netbeans.youtrack.issues.dialogs;
+package org.llorllale.netbeans.youtrack.issues.mock.youtrack;
+
+import org.llorllale.youtrack.api.Projects;
+import org.llorllale.youtrack.api.YouTrack;
 
 /**
- * A dialog window.
+ * Mock impl of {@link YouTrack} suitable for tests.
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @since 0.2.0
  */
-public interface Dialog {
+public class MockYouTrack implements YouTrack {
+  private final Projects projects;
+
   /**
-   * Displays the dialog window on-screen.
+   * Ctor.
    * 
+   * @param projects the impl of {@link Projects} to be returned by {@link #projects()}
    * @since 0.2.0
    */
-  public void show();
+  public MockYouTrack(Projects projects) {
+    this.projects = projects;
+  }
+
+  @Override
+  public Projects projects() {
+    return this.projects;
+  }
 }
