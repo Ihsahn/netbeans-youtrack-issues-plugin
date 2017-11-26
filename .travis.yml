@@ -6,11 +6,15 @@ cache:
 dist: trusty
 jdk:
 - openjdk8
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 jobs:
   include:
   - if: type = pull_request
     script:
-    - mvn -Panalyze,release-profile -DskipTests=true clean install
+    - mvn -P analyze -DskipTests=true clean compile
     - mvn cobertura:cobertura
     - bash <(curl -s https://codecov.io/bash)
   - if: type = push AND tag IS present
