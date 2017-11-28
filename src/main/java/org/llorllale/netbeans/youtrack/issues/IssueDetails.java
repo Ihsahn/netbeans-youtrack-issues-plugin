@@ -17,25 +17,18 @@
 package org.llorllale.netbeans.youtrack.issues;
 
 import javax.swing.JComponent;
+import org.llorllale.youtrack.api.Issue;
 import org.llorllale.youtrack.api.Issues.IssueSpec;
 
 /**
- * 
+ * The details of an {@link Issue}.
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @since 0.2.0
  */
-public interface ViewOfIssue {
+public interface IssueDetails {
   /**
-   * The enclosed issue's ID.
-   * 
-   * @return the enclosed issue's ID
-   * @since 0.2.0
-   */
-  String issueId();
-
-  /**
-   * The issue's {@link IssueSpec spec}.
+   * A snapshot of the issue's current details in the form of a {@link IssueSpec spec}.
    * 
    * <p>Note: this does not include the issue's ID.
    * 
@@ -44,5 +37,11 @@ public interface ViewOfIssue {
    */
   IssueSpec asSpec();
 
+  /**
+   * Returns a Swing view of this {@link IssueDetails}.
+   * 
+   * @return a Swing view of this {@link IssueDetails} to be displayed to the end user
+   * @since 0.2.0
+   */
   JComponent asView();
 }

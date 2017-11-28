@@ -18,17 +18,20 @@ package org.llorllale.netbeans.youtrack.issues;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import org.llorllale.youtrack.api.AssignedField;
 import org.llorllale.youtrack.api.Issue;
 
 /**
+ * Adapts the {@link Issue#fields() fields} of an issue for use with a {@link JTable}.
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @since 0.2.0
  */
-public class FieldsAsTableModel implements TableModel {
+@SuppressWarnings("checkstyle:MethodCount")
+public final class FieldsModel implements TableModel {
   private static final Map<Integer, String> COLUMNS = new HashMap<>();
 
   static {
@@ -39,11 +42,12 @@ public class FieldsAsTableModel implements TableModel {
   private final String[][] fields;
 
   /**
+   * Ctor.
    * 
-   * @param issue 
+   * @param issue the issue with fields to model
    * @since 0.2.0
    */
-  public FieldsAsTableModel(Issue issue) {
+  public FieldsModel(Issue issue) {
     this.fields = new String[2][issue.fields().size()];
     for (int i = 0; i < issue.fields().size(); i++) {
       final AssignedField field = issue.fields().get(i);

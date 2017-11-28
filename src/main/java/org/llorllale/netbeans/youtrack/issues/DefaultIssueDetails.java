@@ -16,39 +16,65 @@
 
 package org.llorllale.netbeans.youtrack.issues;
 
+import java.io.IOException;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.llorllale.youtrack.api.Issue;
 import org.llorllale.youtrack.api.Issues.IssueSpec;
 
 /**
+ * Default {@link IssueDetails} that exposes the details to the end user via a {@link JPanel}. 
+ * The fields are currently read-only. The {@link #asSpec()} will need refactoring if the fields
+ * are to be editable.
  * 
+ * <p>For testing purposes, several components can be access with these names as reference:
+ * 
+ * <ul>
+ *   <li><strong>ID:</strong> -> "issueIdTxtBox"</li>
+ *   <li><strong>Created By:</strong> -> "createdByTxtBox"</li>
+ *   <li><strong>Created On:</strong> -> "createdOnTxtBox"</li>
+ *   <li><strong>Summary:</strong> -> "summaryTxtBox"</li>
+ *   <li><strong>Description:</strong> -> "descriptionTxtBox"</li>
+ * </ul>
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @since 0.2.0
  */
-public class AsView extends JPanel implements ViewOfIssue {
+@SuppressWarnings("checkstyle:ClassDataAbstractionCoupling")
+public final class DefaultIssueDetails extends JPanel implements IssueDetails {
   private static final long serialVersionUID = -7596322055876803429L;
 
   private final Issue issue;
-  private final FieldsAsTableModel model;
 
   /** 
-   * Creates new form AsView 
+   * Ctor.
    * 
    * @param issue the YouTrack issue to display to the end user
    * @since 0.2.0
    */
-  public AsView(Issue issue) {
-    this.initComponents();
+  public DefaultIssueDetails(Issue issue) {
     this.issue = issue;
-    this.model = new FieldsAsTableModel(issue);
-    this.fieldsTable.setModel(this.model);
+    this.initComponents();
+    this.populateViewWith(this.issue);
   }
 
-  @Override
-  public String issueId() {
-    return this.issue.id();
+  /**
+   * Populates this views fields with the issue's details.
+   * 
+   * @param iss the issue with details to show to the end user
+   */
+  private void populateViewWith(Issue iss) {
+    this.issueIdTxtBox.setText(iss.id());
+    this.createdOnTxtBox.setText(iss.creationDate().toString());
+    this.summaryTxtBox.setText(iss.summary());
+    iss.description().ifPresent(this.descriptionTxtBox::setText);
+    this.fieldsTable.setModel(new FieldsModel(iss));
+
+    try {
+      this.createdByTxtBox.setText(iss.users().creator().name());
+    } catch(IOException e) {
+      this.createdByTxtBox.setText(e.getMessage());
+    }
   }
 
   @Override
@@ -66,7 +92,7 @@ public class AsView extends JPanel implements ViewOfIssue {
     return this;
   }
 
-  //@checkstyle.OFF Generated Code
+  //@checkstyle.OFF: GENERATED CODE
 
   /** This method is called from within the constructor to
     * initialize the form.
@@ -93,41 +119,41 @@ public class AsView extends JPanel implements ViewOfIssue {
     jScrollPane2 = new javax.swing.JScrollPane();
     fieldsTable = new javax.swing.JTable();
 
-    org.openide.awt.Mnemonics.setLocalizedText(creationDateLbl, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.creationDateLbl.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(creationDateLbl, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.creationDateLbl.text")); // NOI18N
     creationDateLbl.setName("creationDateLbl"); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.jLabel1.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel1.text")); // NOI18N
 
     issueIdTxtBox.setEditable(false);
-    issueIdTxtBox.setText(org.openide.util.NbBundle.getMessage(AsView.class, "AsView.issueIdTxtBox.text")); // NOI18N
+    issueIdTxtBox.setText(org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.issueIdTxtBox.text")); // NOI18N
     issueIdTxtBox.setName("issueIdTxtBox"); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.jLabel2.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel2.text")); // NOI18N
 
     createdByTxtBox.setEditable(false);
-    createdByTxtBox.setText(org.openide.util.NbBundle.getMessage(AsView.class, "AsView.createdByTxtBox.text")); // NOI18N
+    createdByTxtBox.setText(org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.createdByTxtBox.text")); // NOI18N
     createdByTxtBox.setName("createdByTxtBox"); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.jLabel3.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel3.text")); // NOI18N
 
     createdOnTxtBox.setEditable(false);
-    createdOnTxtBox.setText(org.openide.util.NbBundle.getMessage(AsView.class, "AsView.createdOnTxtBox.text")); // NOI18N
+    createdOnTxtBox.setText(org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.createdOnTxtBox.text")); // NOI18N
     createdOnTxtBox.setName("createdOnTxtBox"); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.jLabel4.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel4.text")); // NOI18N
 
     summaryTxtBox.setEditable(false);
-    summaryTxtBox.setText(org.openide.util.NbBundle.getMessage(AsView.class, "AsView.summaryTxtBox.text")); // NOI18N
+    summaryTxtBox.setText(org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.summaryTxtBox.text")); // NOI18N
     summaryTxtBox.setName("summaryTxtBox"); // NOI18N
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.jLabel5.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel5.text")); // NOI18N
 
     descriptionTxtBox.setColumns(20);
     descriptionTxtBox.setRows(5);
     descriptionTxtBox.setName("descriptionTxtBox"); // NOI18N
     jScrollPane1.setViewportView(descriptionTxtBox);
 
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(AsView.class, "AsView.jLabel6.text")); // NOI18N
+    org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel6.text")); // NOI18N
 
     fieldsTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
@@ -210,7 +236,6 @@ public class AsView extends JPanel implements ViewOfIssue {
     );
   }// </editor-fold>//GEN-END:initComponents
 
-
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField createdByTxtBox;
   private javax.swing.JTextField createdOnTxtBox;
@@ -229,5 +254,5 @@ public class AsView extends JPanel implements ViewOfIssue {
   private javax.swing.JTextField summaryTxtBox;
   // End of variables declaration//GEN-END:variables
 
-  //@checkstyle.ON Generated Code
+  //@checkstyle.ON: GENERATED CODE
 }

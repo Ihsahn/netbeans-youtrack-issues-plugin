@@ -16,6 +16,8 @@
 
 package org.llorllale.netbeans.youtrack.issues;
 
+import org.llorllale.netbeans.youtrack.issues.util.IssueToSpec;
+import org.llorllale.netbeans.youtrack.issues.util.EqIssueSpec;
 import java.beans.PropertyChangeListener;
 import javax.swing.JComponent;
 import org.llorllale.youtrack.api.Issue;
@@ -23,22 +25,26 @@ import org.netbeans.modules.bugtracking.spi.IssueController;
 import org.openide.util.HelpCtx;
 
 /**
+ * MVC controller for issues.
  *
  * @author George Aristy (george.aristy@gmail.com)
+ * @see IssueDetails
  * @since 0.2.0
  */
-public class DefaultViewOfIssueController implements IssueController {
+@SuppressWarnings("checkstyle:MethodCount")
+public final class DefaultIssueDetailsController implements IssueController {
   private final Issue issue;
-  private final ViewOfIssue view;
+  private final IssueDetails view;
 
   /**
+   * Ctor.
    * 
-   * @param issue 
+   * @param issue the issue to be displayed
    * @since 0.2.0
    */
-  public DefaultViewOfIssueController(Issue issue) {
+  public DefaultIssueDetailsController(Issue issue) {
     this.issue = issue;
-    this.view = new AsView(issue);
+    this.view = new DefaultIssueDetails(issue);
   }
 
   @Override
@@ -73,7 +79,9 @@ public class DefaultViewOfIssueController implements IssueController {
 
   @Override
   public boolean isChanged() {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    return new EqIssueSpec(
+        new IssueToSpec().apply(this.issue)
+    ).isEqualTo(this.view.asSpec());
   }
 
   @Override

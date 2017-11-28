@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package org.llorllale.netbeans.youtrack.issues;
+package org.llorllale.netbeans.youtrack.issues.util;
 
 import org.llorllale.youtrack.api.Issues.IssueSpec;
 
 /**
+ * Tests whether the decorated {@link IssueSpec} is 
+ * {@link #isEqualTo(org.llorllale.youtrack.api.Issues.IssueSpec) equal} to another 
+ * {@link IssueSpec}.
  *
  * @author George Aristy (george.aristy@gmail.com)
  * @since 0.2.0
  */
-public class AreEqual  {
-  private final IssueSpec first;
-  private final IssueSpec second;
+public final class EqIssueSpec implements Equality<IssueSpec> {
+  private final IssueSpec spec;
 
-  public AreEqual(IssueSpec first, IssueSpec second) {
-    this.first = first;
-    this.second = second;
+  /**
+   * Ctor.
+   * 
+   * @param spec the base spec to test against
+   * @since 0.2.0
+   */
+  public EqIssueSpec(IssueSpec spec) {
+    this.spec = spec;
   }
 
-  public boolean isTrue() {
-    return this.first.asFields().equals(this.second.asFields())
-        && this.first.asNameValuePairs().equals(this.second.asNameValuePairs());
+  @Override
+  public boolean isEqualTo(IssueSpec other) {
+    return new EqList<>(this.spec.asNameValuePairs()).isEqualTo(other.asNameValuePairs())
+        && this.spec.asFields().equals(other.asFields());
   }
 }
