@@ -16,10 +16,10 @@
 
 package org.llorllale.netbeans.youtrack.issues;
 
-import org.llorllale.netbeans.youtrack.issues.util.IssueToSpec;
-import org.llorllale.netbeans.youtrack.issues.util.EqIssueSpec;
 import java.beans.PropertyChangeListener;
 import javax.swing.JComponent;
+import org.llorllale.netbeans.youtrack.issues.util.EqIssueSpec;
+import org.llorllale.netbeans.youtrack.issues.util.IssueToSpec;
 import org.llorllale.youtrack.api.Issue;
 import org.netbeans.modules.bugtracking.spi.IssueController;
 import org.openide.util.HelpCtx;

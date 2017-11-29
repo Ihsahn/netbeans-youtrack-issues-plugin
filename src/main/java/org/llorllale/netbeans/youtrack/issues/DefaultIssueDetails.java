@@ -16,11 +16,16 @@
 
 package org.llorllale.netbeans.youtrack.issues;
 
-import java.io.IOException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import org.llorllale.youtrack.api.Field;
+import org.llorllale.youtrack.api.FieldValue;
 import org.llorllale.youtrack.api.Issue;
 import org.llorllale.youtrack.api.Issues.IssueSpec;
+import org.llorllale.youtrack.api.Project;
 
 /**
  * Default {@link IssueDetails} that exposes the details to the end user via a {@link JPanel}. 
@@ -35,6 +40,7 @@ import org.llorllale.youtrack.api.Issues.IssueSpec;
  *   <li><strong>Created On:</strong> -> "createdOnTxtBox"</li>
  *   <li><strong>Summary:</strong> -> "summaryTxtBox"</li>
  *   <li><strong>Description:</strong> -> "descriptionTxtBox"</li>
+ *   <li><strong>Fields:</strong> -> "fieldsTable"</li>
  * </ul>
  *
  * @author George Aristy (george.aristy@gmail.com)
@@ -65,25 +71,51 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
    */
   private void populateViewWith(Issue iss) {
     this.issueIdTxtBox.setText(iss.id());
-    this.createdOnTxtBox.setText(iss.creationDate().toString());
+    this.createdOnTxtBox.setText(
+        DateTimeFormatter.ofPattern("YYYY/MM/dd HH:mm:ss", Locale.getDefault())
+            .withZone(ZoneId.systemDefault())
+            .format(iss.creationDate())
+    );
     this.summaryTxtBox.setText(iss.summary());
     iss.description().ifPresent(this.descriptionTxtBox::setText);
     this.fieldsTable.setModel(new FieldsModel(iss));
-
-    try {
-      this.createdByTxtBox.setText(iss.users().creator().name());
-    } catch(IOException e) {
-      this.createdByTxtBox.setText(e.getMessage());
-    }
   }
 
   @Override
   public IssueSpec asSpec() {
-    final IssueSpec spec = new IssueSpec(
+    IssueSpec spec = new IssueSpec(
         this.summaryTxtBox.getText(), 
         this.descriptionTxtBox.getText()
     );
-    this.issue.fields().forEach(field -> spec.with(field, field.value()));
+    //TODO fieldsTable.getRowCount() does NOT return what you think it does... so this does not work
+    for (int i = 0; i < this.fieldsTable.getRowCount(); i++) {
+      final String fieldName = this.fieldsTable.getValueAt(i, 0).toString();
+      final String fieldValue = this.fieldsTable.getValueAt(i, 1).toString();
+      spec = spec.with(
+          new Field(){
+            @Override
+            public Project project() {
+              throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public String name() {
+              return fieldName;
+            }
+          }, 
+          new FieldValue(){
+            @Override
+            public Field field() {
+              throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public String asString() {
+              return fieldValue;
+            }
+          }
+      );
+    }
     return spec;
   }
 
@@ -106,8 +138,6 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
     creationDateLbl = new javax.swing.JLabel();
     jLabel1 = new javax.swing.JLabel();
     issueIdTxtBox = new javax.swing.JTextField();
-    jLabel2 = new javax.swing.JLabel();
-    createdByTxtBox = new javax.swing.JTextField();
     jLabel3 = new javax.swing.JLabel();
     createdOnTxtBox = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
@@ -127,12 +157,6 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
     issueIdTxtBox.setEditable(false);
     issueIdTxtBox.setText(org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.issueIdTxtBox.text")); // NOI18N
     issueIdTxtBox.setName("issueIdTxtBox"); // NOI18N
-
-    org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel2.text")); // NOI18N
-
-    createdByTxtBox.setEditable(false);
-    createdByTxtBox.setText(org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.createdByTxtBox.text")); // NOI18N
-    createdByTxtBox.setName("createdByTxtBox"); // NOI18N
 
     org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(DefaultIssueDetails.class, "DefaultIssueDetails.jLabel3.text")); // NOI18N
 
@@ -174,35 +198,31 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addGap(105, 105, 105)
-        .addComponent(jLabel1)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(issueIdTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jLabel2)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(createdByTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(jLabel3)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(createdOnTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(18, 18, 18)
-        .addComponent(creationDateLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE))
-      .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(jLabel6)
-          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4)
-            .addComponent(jLabel5)))
+          .addComponent(jLabel5)
+          .addComponent(jLabel4))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1)
-          .addComponent(summaryTxtBox)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE)))
-        .addContainerGap())
+            .addComponent(jLabel1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(issueIdTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jLabel3)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(createdOnTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(250, 250, 250)
+            .addComponent(creationDateLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 12, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jScrollPane1)
+              .addComponent(summaryTxtBox)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE)))
+            .addContainerGap())))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,8 +232,6 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
           .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
             .addComponent(jLabel1)
             .addComponent(issueIdTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jLabel2)
-            .addComponent(createdByTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(jLabel3)
             .addComponent(createdOnTxtBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(creationDateLbl))
@@ -225,26 +243,21 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel5)
           .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addGap(21, 21, 21)
-            .addComponent(jLabel6))
-          .addGroup(layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel6))
         .addContainerGap(273, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JTextField createdByTxtBox;
   private javax.swing.JTextField createdOnTxtBox;
   private javax.swing.JLabel creationDateLbl;
   private javax.swing.JTextArea descriptionTxtBox;
   private javax.swing.JTable fieldsTable;
   private javax.swing.JTextField issueIdTxtBox;
   private javax.swing.JLabel jLabel1;
-  private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;

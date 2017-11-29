@@ -375,6 +375,11 @@
       <version>${netbeans.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-util-ui</artifactId>
+      <version>${netbeans.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.llorllale</groupId>
       <artifactId>youtrack-api</artifactId>
       <version>0.9.0</version>
