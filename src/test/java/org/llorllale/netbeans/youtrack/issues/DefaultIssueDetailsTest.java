@@ -16,7 +16,15 @@
 
 package org.llorllale.netbeans.youtrack.issues;
 
+import java.time.Instant;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
+import org.llorllale.netbeans.youtrack.issues.mock.youtrack.MockField;
+import org.llorllale.netbeans.youtrack.issues.mock.youtrack.MockIssue;
+import org.llorllale.netbeans.youtrack.issues.mock.youtrack.MockUser;
+import org.llorllale.netbeans.youtrack.issues.util.EqIssueSpec;
+import org.llorllale.youtrack.api.Issue;
+import org.llorllale.youtrack.api.Issues.IssueSpec;
 
 /**
  * Unit tests for {@link DefaultIssueDetails}.
@@ -26,12 +34,30 @@ import org.junit.Test;
  */
 public class DefaultIssueDetailsTest {
   /**
-   * {@link DefaultIssueDetails#asSpec()} should return 
+   * {@link DefaultIssueDetails#asSpec()} should return a spec describing the issue accurately.
    * 
    * @since 0.2.0
    */
   @Test
   public void asSpec() {
+    final Issue issue = new MockIssue()
+        .withId("TP-123")
+        .withCreationDate(Instant.now())
+        .withSummary("Summary")
+        .withDescription("Description")
+        .with(new MockField("State", "Open"))
+        .with(new MockField("Assignee", "joe"))
+        .withCreator(
+            new MockUser()
+                .withEmail("creator@test.com")
+                .withLoginName("creatorLogin")
+                .withName("Creator")
+        );
+    final IssueSpec expected = new IssueSpec(issue.summary(), issue.description().get());
+    issue.fields().forEach(f -> expected.with(f, f.value()));
+    final IssueSpec result = new DefaultIssueDetails(issue).asSpec();
+
+    assertThat(new EqIssueSpec(result).isEqualTo(expected)).isTrue();
   }
 
   /**

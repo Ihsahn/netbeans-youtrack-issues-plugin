@@ -16,7 +16,9 @@
 
 package org.llorllale.netbeans.youtrack.issues;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JTable;
 import javax.swing.event.TableModelListener;
@@ -39,6 +41,7 @@ public final class FieldsModel implements TableModel {
     COLUMNS.put(1, "Value");
   }
 
+  private final List<TableModelListener> listeners;
   private final String[][] fields;
 
   /**
@@ -48,7 +51,9 @@ public final class FieldsModel implements TableModel {
    * @since 0.2.0
    */
   public FieldsModel(Issue issue) {
+    this.listeners = new ArrayList<>();
     this.fields = new String[2][issue.fields().size()];
+
     for (int i = 0; i < issue.fields().size(); i++) {
       final AssignedField field = issue.fields().get(i);
       this.fields[0][i] = field.name();
@@ -93,11 +98,11 @@ public final class FieldsModel implements TableModel {
 
   @Override
   public void addTableModelListener(TableModelListener listener) {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    this.listeners.add(listener);
   }
 
   @Override
   public void removeTableModelListener(TableModelListener listener) {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    this.listeners.remove(listener);
   }
 }
