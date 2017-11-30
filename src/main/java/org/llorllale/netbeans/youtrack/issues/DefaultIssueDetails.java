@@ -19,6 +19,7 @@ package org.llorllale.netbeans.youtrack.issues;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Objects;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.llorllale.youtrack.api.Field;
@@ -83,11 +84,17 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
 
   @Override
   public IssueSpec asSpec() {
-    IssueSpec spec = new IssueSpec(
-        this.summaryTxtBox.getText(), 
-        this.descriptionTxtBox.getText()
-    );
-    //TODO fieldsTable.getRowCount() does NOT return what you think it does... so this does not work
+    IssueSpec spec; 
+    
+    if (Objects.nonNull(this.descriptionTxtBox.getText())) {
+      spec = new IssueSpec(
+          this.summaryTxtBox.getText(), 
+          this.descriptionTxtBox.getText()
+      );
+    } else {
+      spec = new IssueSpec(this.summaryTxtBox.getText());
+    }
+
     for (int i = 0; i < this.fieldsTable.getRowCount(); i++) {
       final String fieldName = this.fieldsTable.getValueAt(i, 0).toString();
       final String fieldValue = this.fieldsTable.getValueAt(i, 1).toString();
@@ -102,6 +109,20 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
             public String name() {
               return fieldName;
             }
+
+            @Override
+            public boolean equals(Object object) {
+              final boolean equals;
+
+              if (!(object instanceof Field)) {
+                equals = false;
+              } else {
+                final Field other = (Field) object;
+                equals = this.name().equals(other.name());
+              }
+
+              return equals;
+            }
           }, 
           new FieldValue(){
             @Override
@@ -112,6 +133,20 @@ public final class DefaultIssueDetails extends JPanel implements IssueDetails {
             @Override
             public String asString() {
               return fieldValue;
+            }
+
+            @Override
+            public boolean equals(Object object) {
+              final boolean equals;
+
+              if (!(object instanceof FieldValue)) {
+                equals = false;
+              } else {
+                final FieldValue other = (FieldValue) object;
+                equals = this.asString().equals(other.asString());
+              }
+
+              return equals;
             }
           }
       );
